@@ -6,36 +6,78 @@
 
 <script>
 
-</script>
-function startTimer(duration, display) {
-    var timer = duration, minutes, seconds;
+
+function startTimer(display) {
+    var  minutes, seconds;
+    
     setInterval(function () {
-        minutes = parseInt(timer / 60, 10);
-        seconds = parseInt(timer % 60, 10);
+        var d = new Date();
+        var currentTime = d.getTime();
+        var elapseTime = currentTime - startTime;
+        
+        minutes = Math.floor(elapseTime / 60000);
+        seconds = ((elapseTime % 60000) / 1000).toFixed(0);
 
         minutes = minutes < 10 ? "0" + minutes : minutes;
         seconds = seconds < 10 ? "0" + seconds : seconds;
 
         display.textContent = minutes + ":" + seconds;
 
-        if (--timer < 0) {
-            timer = duration;
-        }
+ 
     }, 1000);
 }
 
+function incrementCounter(){
+    counterItem = document.querySelector('#counter');
+    counter++;
+    counterItem.textContent = counter;
+}
+
+async function addTenCounter(){
+    counterItem = document.querySelector('#counter');
+    let response = await fetch('/'+counter)
+    jsonVal = await response.json();
+    counter = jsonVal.sum;
+    
+    counterItem.textContent = counter;
+}
+
+async function calculate(){
+    answer = document.querySelector('#answer');
+    var num1 = document.getElementById("num1").value;
+    var num2 = document.getElementById("num2").value;
+    let response = await fetch('/'+num1+'/'+num2)
+    jsonVal = await response.json();
+    result = jsonVal.sum;
+    answer.textContent = result;
+}
+
+var d = new Date();
+var startTime = d.getTime();
+var counter = 0;
+
 window.onload = function () {
-    var fiveMinutes = 60 * 5,
-        display = document.querySelector('#time');
-    startTimer(fiveMinutes, display);
+    display = document.querySelector('#time');
+    startTimer(display);
 };
+</script>
 <body>
 
  
 
 <div class="main">
-    <div>Registration closes in <span id="time">05:00</span> minutes!</div>
-    <li>Hello World Div!</li>
+    <div>Timer <span id="time">00:00</span> minutes!</div>
+    <div>Counter <span id="counter">0</span> <button onclick="incrementCounter()">Add One To Counter</button></div>
+    <div><button onclick="addTenCounter()">Add 10 To Counter</button></div>
+    <div>Add Calculator
+
+        <form onsubmit="return false">
+            <input type="number" id="num1" name="num1"> +
+            <input type="number" id="num2" name="num2"> =
+            <span id="answer"></span> 
+            <br><button onclick="calculate()">Calculate</button>
+          </form>
+    </div>
 
 </div>
 
